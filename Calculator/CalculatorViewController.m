@@ -14,11 +14,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *display;
 @property (nonatomic, assign) BOOL isTyping;
 
-//covers the case where user presses dot after an operation
-@property (nonatomic, assign) BOOL isOperationLastPressed;
-
-
-
 @end
 
 @implementation CalculatorViewController
@@ -37,44 +32,27 @@
 - (IBAction)operationPressed:(UIButton *)button {
     [CalculatorBrain storeOperator:button.currentTitle andNumber:[self.display.text floatValue]];
     self.isTyping = NO;
-    self.isOperationLastPressed = YES;
 }
 
 
 - (IBAction)clearLabel:(UIButton *)button {
     self.display.text = @"0";
-    self.isTyping = YES;
+    self.isTyping = NO;
 }
 
-- (IBAction)dotPressed:(UIButton *)button {
+
+- (IBAction)buttonPressed:(UIButton *)button {
+    // Are you trying to add a 2nd '.' ?
+    if ([button.currentTitle isEqualToString:@"."] && [self.display.text rangeOfString:@"."].location != NSNotFound && self.isTyping)
+        return;
     
-    if ([self.display.text rangeOfString:@"."].location == NSNotFound || self.isOperationLastPressed)
-        // dot character not found in the display, so we can append it
+    // if display = 0 then replace display with button title
+    if (!self.isTyping)
     {
-        if (self.isTyping)
-        // if istyping then append the dot
-        {
-            self.display.text = [[NSString alloc] initWithFormat:@"%@%@",
-                                 self.display.text,
-                                 button.currentTitle
-                                 ];
-        } else {
-        // new number then "." becomes "0."
+        if ([button.currentTitle isEqualToString:@"."])
             self.display.text = @"0.";
-            self.isTyping = YES;
-        }
-        self.isOperationLastPressed = NO;
-    }
-  //  else {
-        // dot pressed after an operation
-  //  }
-}
-
-- (IBAction)buttonPressed:(UIButton *)button {    
-    if ([self.display.text isEqualToString:@"0"] || !self.isTyping )
-    // if display = 0 and new number then replace display with button title
-    {
-        self.display.text = button.currentTitle;
+        else
+            self.display.text = button.currentTitle;
         self.isTyping = YES;
     }
     else
@@ -91,7 +69,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    self.isTyping = YES;
+    self.isTyping = NO;
 }
 
 - (void)didReceiveMemoryWarning

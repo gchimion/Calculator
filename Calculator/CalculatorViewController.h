@@ -16,7 +16,7 @@
 
 - (IBAction)clearLabel:(UIButton *)button ;
 
-- (IBAction)dotPressed:(UIButton *)button;
+//- (IBAction)dotPressed:(UIButton *)button;
 
 - (IBAction)equalPressed:(UIButton *)button; 
 
